@@ -10,7 +10,7 @@ env:
   
 jobs:
   warmup:
-    runs-on: [ bench, "${{ matrix.runner }}" ]
+    runs-on: [ "${{ matrix.runner }}" ]
     strategy:
       matrix:
         runner: [ ubuntu-latest, icx ]
@@ -28,7 +28,7 @@ jobs:
 
   build:
     needs: warmup
-    runs-on: [ bench, "${{ matrix.runner }}" ]
+    runs-on: [ "${{ matrix.runner }}" ]
     strategy:
       matrix:
         runner: ${{ fromJSON(needs.warmup.outputs.runner_config) }}
@@ -39,7 +39,7 @@ jobs:
 
   test:
     needs: [warmup, build]
-    runs-on: [ bench, "${{ matrix.runner }}" ]
+    runs-on: [ "${{ matrix.runner }}" ]
     strategy:
       matrix:
         runner: ${{ fromJSON(needs.warmup.outputs.runner_config) }}
@@ -50,7 +50,7 @@ jobs:
   eval:
     needs: [warmup, test]
     if: ${{ always() }}
-    runs-on: [ bench, "${{ matrix.runner }}" ]
+    runs-on: [ "${{ matrix.runner }}" ]
     strategy:
       matrix:
         runner: ${{ fromJSON(needs.warmup.outputs.runner_config) }}
@@ -61,7 +61,7 @@ jobs:
   clean:
     needs: eval
     if: ${{ always() }}
-    runs-on: [ bench, "${{ matrix.runner }}" ]
+    runs-on: [ "${{ matrix.runner }}" ]
     strategy:
       matrix:
         runner: ${{ fromJSON(needs.warmup.outputs.runner_config) }}
