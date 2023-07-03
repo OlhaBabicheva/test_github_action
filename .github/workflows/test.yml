@@ -1,0 +1,71 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+env:
+  runner_matrix: "{\"runner\":[ spr, icx ]}"
+  
+jobs:
+  warmup:
+    runs-on: [ bench, "${{ matrix.runner }}" ]
+    strategy:
+      matrix:
+        runner: [ spr, icx ]
+
+    defaults: 
+      run: 
+        shell: bash
+    outputs:
+      runner_config: ${{ steps.set_runner.outputs.runner_config }}
+    
+    steps:
+    - name: Configuring runner
+      id: set_runner
+      run: echo "::set-output name=runner_config::$runner_matrix"
+
+  build:
+    needs: warmup
+    runs-on: [ bench, "${{ matrix.runner }}" ]
+    strategy:
+      matrix:
+        runner: ${{ fromJSON(needs.warmup.outputs.runner_config) }}
+
+    steps:
+    - name: Check warmup
+      run: echo "${{ matrix.runner }}"
+
+  test:
+    needs: [warmup, build]
+    runs-on: [ bench, "${{ matrix.runner }}" ]
+    strategy:
+      matrix:
+        runner: ${{ fromJSON(needs.warmup.outputs.runner_config) }}
+    steps:
+    - name: Check warmup
+      run: echo "${{ matrix.runner }}"
+
+  eval:
+    needs: [warmup, test]
+    if: ${{ always() }}
+    runs-on: [ bench, "${{ matrix.runner }}" ]
+    strategy:
+      matrix:
+        runner: ${{ fromJSON(needs.warmup.outputs.runner_config) }}
+    steps:
+    - name: Check warmup
+      run: echo "${{ matrix.runner }}"
+
+  clean:
+    needs: eval
+    if: ${{ always() }}
+    runs-on: [ bench, "${{ matrix.runner }}" ]
+    strategy:
+      matrix:
+        runner: ${{ fromJSON(needs.warmup.outputs.runner_config) }}
+    steps:
+    - name: Check warmup
+      run: echo "${{ matrix.runner }}"
+  
