@@ -6,18 +6,14 @@ name: CI
 on:
   workflow_dispatch:
 env:
-  runner_matrix: "{\"runner\":[ ubuntu-latest, icx ]}"
+  runner_matrix: "{\"runner\":[ ubuntu-latest, macos-latest ]}"
   
 jobs:
   warmup:
     runs-on: [ "${{ matrix.runner }}" ]
     strategy:
       matrix:
-        runner: [ ubuntu-latest, icx ]
-
-    defaults: 
-      run: 
-        shell: bash
+        runner: [ ubuntu-latest, macos-latest ]
     outputs:
       runner_config: ${{ steps.set_runner.outputs.runner_config }}
     
@@ -35,7 +31,12 @@ jobs:
 
     steps:
     - name: Check warmup
-      run: echo "${{ matrix.runner }}"
+      run: |
+        echo "${{ matrix.runner }}"
+    - name: Sleep
+      if: ${{ matrix.runner == 'ubuntu-latest' }} 
+      run: |
+        sleep 10
 
   test:
     needs: [warmup, build]
