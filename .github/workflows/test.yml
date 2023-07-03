@@ -13,7 +13,7 @@ jobs:
     runs-on: [ bench, "${{ matrix.runner }}" ]
     strategy:
       matrix:
-        runner: [ spr, icx ]
+        runner: [ ubuntu-latest, icx ]
 
     defaults: 
       run: 
