@@ -1,0 +1,18 @@
+name: Profiler starter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  start_jobs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+  call_workflows:
+    strategy:
+      matrix:
+        runner: [ ubuntu-latest, macos-latest ]
+    uses: ./.github/workflows/profiler.yml
+    with:
+      runner: ${{ matrix.runner }}
